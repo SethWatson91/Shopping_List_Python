@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="messages">
+                {% for category, message in messages %}
+                    <div class="{{ category }}">{{ message }}</div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+
+
+        <h1>Shopping List</h1>
+        <form action="/add" method="POST">
+            <input type="text" name="name" placeholder="Item name" required>
+            <input type="number" name="quantity" min="1" value="1" required>
+            <button type="submit">Add</button>
+        </form>
+
+        <hr>
+
+        <!--Shopping list-->
+        {% for item in shopping_list %}
+        <div class="item">
+            <form action="/toggle/{{ item[0]  }}" method="POST">
+                <input type="checkbox" onChange="this.form.submit()" {% if item[3] %}checked{% endif %}>
+                <span class="{% if item[3] %}bought{% endif %}">{{ item[1] }} ({{ item[2] }})</span>
+            </form>
+            <form action="/delete/{{ item[0] }}" method="POST">
+                <button type="submit">Delete</button>
+            </form>
+        </div>
+        {% endfor %}
+
+    </body>
+</html>
