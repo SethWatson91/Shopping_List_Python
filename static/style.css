@@ -122,24 +122,30 @@ form.add-item button:hover {
     margin-left: 10px;
 }
 
-.top-bar a.topbar-button {
-    display: inline-block;
-    padding: 6px 10px;
+/* Make top-bar link + button identical height */
+.top-bar .topbar-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    padding: 0 10px;
     border: 1px solid #cfd4da;
     border-radius: 6px;
     background: #ffffff;
     color: #333;
+    box-sizing: border-box;
+    line-height: 1;
+    font: inherit;
+    cursor: pointer;
+}
+
+.top-bar a.topbar-button {
     text-decoration: none;
 }
 
 .top-bar button.topbar-button {
-    display: inline-block;
-    padding: 6px 10px;
-    border: 1px solid #cfd4da;
-    border-radius: 6px;
-    background: #ffffff;
-    color: #333;
-    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 .top-bar a.topbar-button:hover {
