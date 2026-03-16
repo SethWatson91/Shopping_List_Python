@@ -206,6 +206,64 @@ def select_list():
     return redirect(url_for("home"))
 
 
+@app.route("/lists", methods=["GET"])
+@login_required
+def manage_lists():
+    user_id = session["user_id"]
+    all_lists = get_lists_for_user(user_id)
+
+    current_list = None
+    if "current_list_id" in session:
+        current_list = get_list_for_user(user_id, session["current_list_id"])
+
+    return render_template(
+        "lists.html",
+        lists=all_lists,
+        current_list=current_list,
+    )
+
+
+@app.route("/lists/delete/<int:list_id>", methods=["POST"])
+@login_required
+def delete_list(list_id: int):
+    user_id = session["user_id"]
+
+    # Ensure list belongs to user
+    target = get_list_for_user(user_id, list_id)
+    if target is None:
+        flash("List not found.", "error")
+        return redirect(url_for("manage_lists"))
+
+    all_lists = get_lists_for_user(user_id)
+    if len(all_lists) <= 1:
+        flash("You must have at least one list.", "error")
+        return redirect(url_for("manage_lists"))
+
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        # Delete items first (SQLite FK constraints may not be enabled)
+        cursor.execute(
+            "DELETE FROM items WHERE user_id = ? AND list_id = ?",
+            (user_id, list_id),
+        )
+        cursor.execute(
+            "DELETE FROM lists WHERE id = ? AND user_id = ?",
+            (list_id, user_id),
+        )
+        conn.commit()
+
+    # If we deleted the current list, switch to another list
+    if session.get("current_list_id") == list_id:
+        remaining = get_lists_for_user(user_id)
+        if remaining:
+            session["current_list_id"] = remaining[0]["id"]
+        else:
+            session.pop("current_list_id", None)
+
+    flash(f"Deleted list '{target['name']}'.", "success")
+    return redirect(url_for("manage_lists"))
+
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":

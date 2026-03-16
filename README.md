@@ -52,3 +52,4 @@ Then open `http://localhost:27016` in your browser.
 - Each user can have multiple named lists (for example: "Default", "Monthly", "Party").
 - Use the list dropdown on the main page to switch between lists.
 - Use the "Create List" form to add a new list; items you add will go into the currently selected list.
+- Manage and delete lists at `/lists`.

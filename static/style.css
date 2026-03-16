@@ -175,3 +175,40 @@ form.add-item button:hover {
 .new-list-form button:hover {
     background-color: #0069d9;
 }
+
+.list-management {
+    margin-top: 10px;
+}
+
+.list-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.list-row-right form {
+    display: inline;
+    margin-left: 8px;
+}
+
+.pill {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background-color: #e9ecef;
+    font-size: 0.85rem;
+}
+
+button.danger {
+    background-color: #dc3545;
+}
+
+button.danger:hover {
+    background-color: #c82333;
+}
