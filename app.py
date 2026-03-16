@@ -3,7 +3,7 @@ import sqlite3
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
 
-DB_PATH = "shopping_list.db"
+DB_PATH = os.getenv("DB_PATH", "shopping_list.db")
 
 
 def get_all_items(user_id: int, list_id: int):

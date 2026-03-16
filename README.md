@@ -41,6 +41,21 @@ Simple Flask + SQLite shopping list application.
 
 Then open `http://localhost:27016` in your browser.
 
+## Run with Docker (recommended for resume/demo)
+
+1. Install Docker Desktop.
+2. From the project root, run:
+
+   ```bash
+   docker compose up --build
+   ```
+
+3. Open `http://localhost:8000`
+
+Notes:
+- The SQLite database is persisted in a Docker volume (`shopping_data`).
+- Change `FLASK_SECRET_KEY` in `docker-compose.yml` for anything beyond local testing.
+
 ## Users
 
 - Go to `/register` to create an account.
