@@ -132,11 +132,30 @@ form.add-item button:hover {
     text-decoration: none;
 }
 
+.top-bar button.topbar-button {
+    display: inline-block;
+    padding: 6px 10px;
+    border: 1px solid #cfd4da;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #333;
+    cursor: pointer;
+}
+
 .top-bar a.topbar-button:hover {
     background: #f1f3f5;
 }
 
+.top-bar button.topbar-button:hover {
+    background: #f1f3f5;
+}
+
 .top-bar a.topbar-button:focus {
+    outline: 2px solid #80bdff;
+    outline-offset: 2px;
+}
+
+.top-bar button.topbar-button:focus {
     outline: 2px solid #80bdff;
     outline-offset: 2px;
 }
