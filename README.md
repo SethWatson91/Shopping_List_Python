@@ -21,7 +21,7 @@ Simple Flask + SQLite shopping list application.
    pip install flask
    ```
 
-3. Initialize the database (this will create the `users` and `items` tables):
+3. Initialize the database (this will create the `users`, `lists`, and `items` tables):
 
    ```bash
    python init_db.py
@@ -46,3 +46,9 @@ Then open `http://localhost:27016` in your browser.
 - Go to `/register` to create an account.
 - Log in via `/login`.
 - Each user has their own shopping list; items are stored per-user.
+
+## Multiple lists
+
+- Each user can have multiple named lists (for example: "Default", "Monthly", "Party").
+- Use the list dropdown on the main page to switch between lists.
+- Use the "Create List" form to add a new list; items you add will go into the currently selected list.
