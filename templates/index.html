@@ -6,6 +6,23 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     </head>
     <body>
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <span class="app-name">Shopping List</span>
+            </div>
+            <div class="top-bar-right">
+                {% if session.get("username") %}
+                    <span class="welcome">Hello, {{ session["username"] }}</span>
+                    <form action="{{ url_for('logout') }}" method="POST">
+                        <button type="submit">Logout</button>
+                    </form>
+                {% else %}
+                    <a href="{{ url_for('login') }}">Login</a>
+                    <a href="{{ url_for('register') }}">Register</a>
+                {% endif %}
+            </div>
+        </header>
+
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <div class="messages">

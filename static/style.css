@@ -96,3 +96,48 @@ form.add-item button:hover {
     border-radius: 4px;
     margin-bottom: 5px;
 }
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    margin-bottom: 10px;
+}
+
+.top-bar .app-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.top-bar .welcome {
+    margin-right: 10px;
+}
+
+.top-bar form {
+    display: inline;
+}
+
+.top-bar a {
+    margin-left: 10px;
+}
+
+.auth-form {
+    max-width: 300px;
+    margin: 0 auto 20px auto;
+}
+
+.auth-form div {
+    margin-bottom: 10px;
+}
+
+.auth-form label {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 6px;
+    box-sizing: border-box;
+}
