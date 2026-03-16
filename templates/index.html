@@ -2,6 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
+        <title>Shopping List</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     </head>
     <body>
@@ -18,7 +19,7 @@
 
 
         <h1>Shopping List</h1>
-        <form action="/add" method="POST">
+        <form action="/add" method="POST" class="add-item">
             <input type="text" name="name" placeholder="Item name" required>
             <input type="number" name="quantity" min="1" value="1" required>
             <button type="submit">Add</button>
@@ -29,11 +30,17 @@
         <!--Shopping list-->
         {% for item in shopping_list %}
         <div class="item">
-            <form action="/toggle/{{ item[0]  }}" method="POST">
-                <input type="checkbox" onChange="this.form.submit()" {% if item[3] %}checked{% endif %}>
-                <span class="{% if item[3] %}bought{% endif %}">{{ item[1] }} ({{ item[2] }})</span>
+            <form action="/toggle/{{ item['id'] }}" method="POST">
+                <input
+                    type="checkbox"
+                    onChange="this.form.submit()"
+                    {% if item['bought'] %}checked{% endif %}
+                >
+                <span class="{% if item['bought'] %}bought{% endif %}">
+                    {{ item['name'] }} ({{ item['quantity'] }})
+                </span>
             </form>
-            <form action="/delete/{{ item[0] }}" method="POST">
+            <form action="/delete/{{ item['id'] }}" method="POST">
                 <button type="submit">Delete</button>
             </form>
         </div>
