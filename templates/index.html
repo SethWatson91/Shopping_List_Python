@@ -13,9 +13,9 @@
             <div class="top-bar-right">
                 {% if session.get("username") %}
                     <span class="welcome">Hello, {{ session["username"] }}</span>
-                    <a href="{{ url_for('manage_lists') }}">Manage Lists</a>
+                    <a class="topbar-button" href="{{ url_for('manage_lists') }}">Manage Lists</a>
                     <form action="{{ url_for('logout') }}" method="POST">
-                        <button type="submit">Logout</button>
+                        <button type="submit" class="topbar-button">Logout</button>
                     </form>
                 {% else %}
                     <a href="{{ url_for('login') }}">Login</a>

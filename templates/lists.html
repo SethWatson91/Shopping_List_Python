@@ -14,7 +14,7 @@
                 {% if session.get("username") %}
                     <span class="welcome">Hello, {{ session["username"] }}</span>
                     <form action="{{ url_for('logout') }}" method="POST">
-                        <button type="submit">Logout</button>
+                        <button type="submit" class="topbar-button">Logout</button>
                     </form>
                 {% endif %}
             </div>
