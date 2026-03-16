@@ -2,8 +2,8 @@
 body {
     font-family: Arial, sans-serif;
     max-width: 600px;
-    margin: 20px auto;
-    padding: 0 10px;
+    margin: 12px auto;
+    padding: 0 8px;
     background-color: #f9f9f9;
 }
 
@@ -17,6 +17,7 @@ h1 {
 form.add-item {
     display: flex;
     justify-content: center;
+    flex-wrap: wrap;
     margin-bottom: 20px;
 }
 
@@ -46,6 +47,7 @@ form.add-item button:hover {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 8px;
     padding: 8px;
     background-color: white;
     border: 1px solid #ddd;
@@ -228,6 +230,7 @@ form.add-item button:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 8px;
     padding: 10px;
     background-color: white;
     border: 1px solid #ddd;
@@ -255,4 +258,63 @@ button.danger {
 
 button.danger:hover {
     background-color: #c82333;
+}
+
+@media (max-width: 480px) {
+    body {
+        max-width: 100%;
+        margin: 8px;
+        padding: 0 6px;
+    }
+
+    .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .top-bar .top-bar-right {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .list-selector {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .list-selector select {
+        width: 100%;
+    }
+
+    .new-list-form,
+    form.add-item {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .new-list-form input[type="text"],
+    .new-list-form button,
+    form.add-item input[type="text"],
+    form.add-item input[type="number"],
+    form.add-item button {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 6px;
+    }
+
+    .item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .list-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .list-row-right {
+        margin-top: 6px;
+    }
 }
