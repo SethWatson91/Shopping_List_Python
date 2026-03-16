@@ -1,7 +1,13 @@
 import sqlite3
+import os
+from pathlib import Path
 
 
-DB_PATH = "shopping_list.db"
+DB_PATH = os.getenv("DB_PATH", "shopping_list.db")
+
+db_file = Path(DB_PATH)
+if db_file.parent and str(db_file.parent) not in (".", ""):
+    db_file.parent.mkdir(parents=True, exist_ok=True)
 
 # Connect to the database (creates file if it doesn't exist)
 conn = sqlite3.connect(DB_PATH)

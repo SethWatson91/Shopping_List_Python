@@ -4,9 +4,26 @@ Simple Flask + SQLite shopping list application.
 
 ## Prerequisites
 
-- Python 3.8+ installed
+- Python 3.8+ installed (for non-Docker run)
+- Docker Desktop (recommended)
 
-## Setup
+## Run with Docker (recommended for resume/demo)
+
+1. Install Docker Desktop.
+2. From the project root, run:
+
+   ```bash
+   docker compose up --build
+   ```
+
+3. Open `http://localhost:8000`
+
+Notes:
+- The SQLite database is persisted in a Docker volume (`shopping_data`).
+- Change `FLASK_SECRET_KEY` in `docker-compose.yml` for anything beyond local testing.
+- Stop containers with `Ctrl+C`, or in another terminal: `docker compose down`.
+
+## Run without Docker (local Python)
 
 1. (Optional but recommended) Create and activate a virtual environment:
 
@@ -18,7 +35,7 @@ Simple Flask + SQLite shopping list application.
 2. Install dependencies:
 
    ```bash
-   pip install flask
+   pip install -r requirements.txt
    ```
 
 3. Initialize the database (this will create the `users`, `lists`, and `items` tables):

@@ -1,0 +1,15 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      FLASK_SECRET_KEY: "change-me-in-production"
+      DB_PATH: "/data/shopping_list.db"
+    volumes:
+      - shopping_data:/data
+    restart: unless-stopped
+
+volumes:
+  shopping_data:
+
