@@ -1,45 +1,46 @@
 from flask import Flask, render_template, request, redirect, flash
 import sqlite3
+import os
 
 DB_PATH = "shopping_list.db"
 
 
 def get_all_items():
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM items ORDER BY id")
-    items = cursor.fetchall()
-    conn.close()
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM items ORDER BY id")
+        items = cursor.fetchall()
     return items
 
 
 def add_item(name: str, quantity: int):
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO items (name, quantity) VALUES (?, ?)", (name, quantity))
-    conn.commit()
-    conn.close()
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO items (name, quantity) VALUES (?, ?)",
+            (name, quantity),
+        )
+        conn.commit()
 
 
 def toggle_item(item_id: int):
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("UPDATE items SET bought = NOT bought WHERE id = ?", (item_id,))
-    conn.commit()
-    conn.close()
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        cursor.execute("UPDATE items SET bought = NOT bought WHERE id = ?", (item_id,))
+        conn.commit()
 
 
 def delete_item(item_id: int):
-    conn = sqlite3.connect("shopping_list.db")
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM items WHERE id = ?", (item_id,))
-    conn.commit()
-    conn.close()
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM items WHERE id = ?", (item_id,))
+        conn.commit()
 
 
 app = Flask(__name__)
 
-app.secret_key = "supersecretkey"  # replace with a secure random key for production
+app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-insecure-key-change-me")
 
 # Home route: display shopping list
 @app.route("/")
