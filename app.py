@@ -6,24 +6,24 @@ from werkzeug.security import generate_password_hash, check_password_hash
 DB_PATH = "shopping_list.db"
 
 
-def get_all_items(user_id: int):
+def get_all_items(user_id: int, list_id: int):
     with sqlite3.connect(DB_PATH) as conn:
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT * FROM items WHERE user_id = ? ORDER BY id",
-            (user_id,),
+            "SELECT * FROM items WHERE user_id = ? AND list_id = ? ORDER BY id",
+            (user_id, list_id),
         )
         items = cursor.fetchall()
     return items
 
 
-def add_item(user_id: int, name: str, quantity: int):
+def add_item(user_id: int, list_id: int, name: str, quantity: int):
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
         cursor.execute(
-            "INSERT INTO items (name, quantity, user_id) VALUES (?, ?, ?)",
-            (name, quantity, user_id),
+            "INSERT INTO items (name, quantity, user_id, list_id) VALUES (?, ?, ?, ?)",
+            (name, quantity, user_id, list_id),
         )
         conn.commit()
 
@@ -80,15 +80,130 @@ def create_user(username: str, password: str):
             "INSERT INTO users (username, password_hash) VALUES (?, ?)",
             (username, password_hash),
         )
+        user_id = cursor.lastrowid
+        cursor.execute(
+            "INSERT INTO lists (name, user_id) VALUES (?, ?)",
+            ("Default", user_id),
+        )
         conn.commit()
+
+
+def get_lists_for_user(user_id: int):
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT * FROM lists WHERE user_id = ? ORDER BY id",
+            (user_id,),
+        )
+        return cursor.fetchall()
+
+
+def get_list_for_user(user_id: int, list_id: int):
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT * FROM lists WHERE id = ? AND user_id = ?",
+            (list_id, user_id),
+        )
+        return cursor.fetchone()
+
+
+def get_or_create_default_list(user_id: int):
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT * FROM lists WHERE user_id = ? ORDER BY id LIMIT 1",
+            (user_id,),
+        )
+        existing = cursor.fetchone()
+        if existing:
+            return existing
+        cursor.execute(
+            "INSERT INTO lists (name, user_id) VALUES (?, ?)",
+            ("Default", user_id),
+        )
+        conn.commit()
+        new_id = cursor.lastrowid
+        cursor.execute(
+            "SELECT * FROM lists WHERE id = ?",
+            (new_id,),
+        )
+        return cursor.fetchone()
 
 
 # Home route: display shopping list
 @app.route("/")
 @login_required
 def home():
-    shopping_list = get_all_items(session["user_id"])
-    return render_template("index.html", shopping_list=shopping_list)
+    user_id = session["user_id"]
+
+    # Determine current list (query param can switch lists)
+    list_id_param = request.args.get("list_id", type=int)
+    if list_id_param:
+        if get_list_for_user(user_id, list_id_param):
+            session["current_list_id"] = list_id_param
+
+    current_list = None
+    if "current_list_id" in session:
+        current_list = get_list_for_user(user_id, session["current_list_id"])
+
+    if current_list is None:
+        current_list = get_or_create_default_list(user_id)
+        session["current_list_id"] = current_list["id"]
+
+    all_lists = get_lists_for_user(user_id)
+    shopping_list = get_all_items(user_id, current_list["id"])
+
+    return render_template(
+        "index.html",
+        shopping_list=shopping_list,
+        lists=all_lists,
+        current_list=current_list,
+    )
+
+
+@app.route("/lists/create", methods=["POST"])
+@login_required
+def create_list():
+    user_id = session["user_id"]
+    name = request.form["list_name"].strip()
+    if not name:
+        flash("List name cannot be empty.", "error")
+        return redirect(url_for("home"))
+
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO lists (name, user_id) VALUES (?, ?)",
+            (name, user_id),
+        )
+        conn.commit()
+        new_id = cursor.lastrowid
+
+    session["current_list_id"] = new_id
+    flash(f"Created list '{name}'.", "success")
+    return redirect(url_for("home"))
+
+
+@app.route("/lists/select", methods=["POST"])
+@login_required
+def select_list():
+    user_id = session["user_id"]
+    try:
+        list_id = int(request.form["list_id"])
+    except (KeyError, ValueError):
+        flash("Invalid list selection.", "error")
+        return redirect(url_for("home"))
+
+    if not get_list_for_user(user_id, list_id):
+        flash("List not found.", "error")
+        return redirect(url_for("home"))
+
+    session["current_list_id"] = list_id
+    return redirect(url_for("home"))
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -130,6 +245,9 @@ def login():
 
         session["user_id"] = user["id"]
         session["username"] = user["username"]
+
+        default_list = get_or_create_default_list(user["id"])
+        session["current_list_id"] = default_list["id"]
         flash("Logged in successfully.", "success")
         return redirect(url_for("home"))
 
@@ -148,6 +266,11 @@ def logout():
 @login_required
 def add():
     user_id = session["user_id"]
+    current_list_id = session.get("current_list_id")
+    if current_list_id is None:
+        current_list = get_or_create_default_list(user_id)
+        current_list_id = current_list["id"]
+        session["current_list_id"] = current_list_id
     name = request.form["name"].strip()
     quantity = request.form["quantity"]
 
@@ -163,7 +286,7 @@ def add():
         flash("Quantity must be a number.", "error")
         return redirect(url_for("home"))
 
-    add_item(user_id, name, quantity)
+    add_item(user_id, current_list_id, name, quantity)
     flash(f"Added {quantity} x {name}.", "success")
     return redirect(url_for("home"))
 

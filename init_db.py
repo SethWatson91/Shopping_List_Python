@@ -18,6 +18,18 @@ cursor.execute(
     """
 )
 
+# Create the lists table if it doesn't exist
+cursor.execute(
+    """
+    CREATE TABLE IF NOT EXISTS lists (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        user_id INTEGER NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users (id)
+    )
+    """
+)
+
 # Create the items table if it doesn't exist
 cursor.execute(
     """
@@ -27,7 +39,9 @@ cursor.execute(
         quantity INTEGER NOT NULL,
         bought BOOLEAN NOT NULL DEFAULT 0,
         user_id INTEGER NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users (id)
+        list_id INTEGER NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users (id),
+        FOREIGN KEY (list_id) REFERENCES lists (id)
     )
     """
 )
